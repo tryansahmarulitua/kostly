@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-dark shadow-sm" style="background:#173f35">
+  <div class="container-fluid px-4"><a class="navbar-brand fw-bold" th:href="@{/dashboard}">Kostly<span style="color:#b9e4a8">.</span></a>
+  <div class="d-flex align-items-center gap-3 text-white"><span class="small">Sistem Manajemen Kost</span>
+  <form th:action="@{/logout}" method="post"><button class="btn btn-sm btn-outline-light">Keluar</button></form></div></div>
+</nav>
+<aside th:fragment="sidebar(active)"
+       class="col-md-2 d-none d-md-block bg-white border-end min-vh-100 p-3">
+
+    <div class="text-uppercase text-secondary small fw-bold mb-3">
+        Menu Utama
+    </div>
+
+    <a class="nav-link rounded px-3 py-2 mb-1"
+       th:classappend="${active == 'dashboard'} ? ' active-link' : ''"
+       th:href="@{/dashboard}">
+        ▦ &nbsp; Dashboard
+    </a>
+
+    <a class="nav-link rounded px-3 py-2 mb-1"
+       th:classappend="${active == 'rooms'} ? ' active-link' : ''"
+       th:href="@{/rooms}">
+        ▤ &nbsp; Manajemen Kamar
+    </a>
+
+    <a class="nav-link rounded px-3 py-2 mb-1"
+       th:classappend="${active == 'tenants'} ? ' active-link' : ''"
+       th:href="@{/tenants}">
+        ♙ &nbsp; Penghuni
+    </a>
+
+    <a class="nav-link rounded px-3 py-2 mb-1"
+       th:classappend="${active == 'contracts'} ? ' active-link' : ''"
+       th:href="@{/contracts}">
+        ▣ &nbsp; Kontrak Sewa
+    </a>
+
+    <div class="text-uppercase text-secondary small fw-bold mt-4 mb-2">
+        Keuangan
+    </div>
+
+    <span class="nav-link text-secondary px-3">
+        💳 &nbsp; Tagihan & Pembayaran
+    </span>
+
+    <span class="nav-link text-secondary px-3">
+        ◷ &nbsp; Laporan
+    </span>
+</aside>
+</body></html>

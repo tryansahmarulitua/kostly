@@ -1,0 +1,215 @@
+```html
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Buat Kontrak - Kostly</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f7f5;
+            color: #20352d;
+        }
+
+        .active-link {
+            background: #eaf3e9;
+            color: #173f35 !important;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div th:replace="~{fragments/layout :: navbar}"></div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div th:replace="~{fragments/layout :: sidebar('contracts')}"></div>
+
+            <main class="col-md-10 p-4 p-lg-5">
+                <a th:href="@{/contracts}"
+                   class="text-secondary text-decoration-none">
+                    ← Kembali ke kontrak
+                </a>
+
+                <h1 class="h3 fw-bold mt-3 mb-4">Buat Kontrak Sewa</h1>
+
+                <div class="card border-0 shadow-sm rounded-4 p-4"
+                     style="max-width:760px">
+
+                    <div th:if="${error}"
+                         class="alert alert-danger"
+                         th:text="${error}">
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(tenants)}"
+                         class="alert alert-warning">
+                        Belum ada data penghuni.
+                        <a th:href="@{/tenants/new}">
+                            Tambah penghuni terlebih dahulu
+                        </a>.
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(rooms)}"
+                         class="alert alert-warning">
+                        Tidak ada kamar tersedia.
+                        Tambahkan kamar atau periksa status kamar.
+                    </div>
+
+                    <form method="post"
+                          th:action="@{/contracts}"
+                          th:object="${contractForm}"
+                          th:if="${!#lists.isEmpty(tenants) and !#lists.isEmpty(rooms)}">
+
+                        <div class="mb-3">
+                            <label for="tenantId" class="form-label">
+                                Penghuni
+                            </label>
+
+                            <select id="tenantId"
+                                    class="form-select"
+                                    th:field="*{tenantId}"
+                                    required>
+                                <option value="">-- Pilih Penghuni --</option>
+
+                                <option th:each="tenant : ${tenants}"
+                                        th:value="${tenant.id}"
+                                        th:text="${tenant.fullName + ' - ' + tenant.nik}">
+                                </option>
+                            </select>
+
+                            <div class="text-danger small"
+                                 th:if="${#fields.hasErrors('tenantId')}"
+                                 th:errors="*{tenantId}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="roomId" class="form-label">
+                                Kamar
+                            </label>
+
+                            <select id="roomId"
+                                    class="form-select"
+                                    th:field="*{roomId}"
+                                    required>
+                                <option value="">-- Pilih Kamar --</option>
+
+                                <option th:each="room : ${rooms}"
+                                        th:value="${room.id}"
+                                        th:attr="data-price=${room.price}"
+                                        th:text="${room.roomNumber + ' - ' + room.type}">
+                                </option>
+                            </select>
+
+                            <div class="text-danger small"
+                                 th:if="${#fields.hasErrors('roomId')}"
+                                 th:errors="*{roomId}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="monthlyPriceDisplay"
+                                   class="form-label">
+                                Harga Sewa per Bulan
+                            </label>
+
+                            <input type="text"
+                                   id="monthlyPriceDisplay"
+                                   class="form-control"
+                                   placeholder="Pilih kamar terlebih dahulu"
+                                   readonly>
+
+                            <div class="form-text">
+                                Harga otomatis mengikuti harga kamar di database.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">
+                                Tanggal Mulai
+                            </label>
+
+                            <input type="date"
+                                   id="startDate"
+                                   class="form-control"
+                                   th:field="*{startDate}"
+                                   required>
+
+                            <div class="text-danger small"
+                                 th:if="${#fields.hasErrors('startDate')}"
+                                 th:errors="*{startDate}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="endDate" class="form-label">
+                                Tanggal Selesai
+                            </label>
+
+                            <input type="date"
+                                   id="endDate"
+                                   class="form-control"
+                                   th:field="*{endDate}"
+                                   required>
+
+                            <div class="text-danger small"
+                                 th:if="${#fields.hasErrors('endDate')}"
+                                 th:errors="*{endDate}">
+                            </div>
+                        </div>
+
+                        <button type="submit"
+                                class="btn text-white"
+                                style="background:#173f35">
+                            Simpan Kontrak
+                        </button>
+
+                        <a th:href="@{/contracts}"
+                           class="btn btn-light">
+                            Batal
+                        </a>
+                    </form>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const roomSelect = document.getElementById('roomId');
+                            const priceDisplay = document.getElementById('monthlyPriceDisplay');
+
+                            if (!roomSelect || !priceDisplay) {
+                                return;
+                            }
+
+                            function updatePrice() {
+                                const option =
+                                    roomSelect.options[roomSelect.selectedIndex];
+
+                                const price = option
+                                    ? option.dataset.price
+                                    : '';
+
+                                if (price !== undefined && price !== '') {
+                                    priceDisplay.value =
+                                        new Intl.NumberFormat('id-ID', {
+                                            style: 'currency',
+                                            currency: 'IDR',
+                                            maximumFractionDigits: 0
+                                        }).format(Number(price));
+                                } else {
+                                    priceDisplay.value = '';
+                                }
+                            }
+
+                            roomSelect.addEventListener('change', updatePrice);
+                            updatePrice();
+                        });
+                    </script>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
