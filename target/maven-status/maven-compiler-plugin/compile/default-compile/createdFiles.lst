@@ -2,6 +2,7 @@ com\kostly\dto\InvoiceForm.class
 com\kostly\controller\InvoiceController.class
 com\kostly\config\DataInitializer.class
 com\kostly\entity\Room.class
+com\kostly\controller\ReportController.class
 com\kostly\service\TenantService.class
 com\kostly\repository\UserRepository.class
 com\kostly\repository\RentalContractRepository.class

@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Buat Tagihan - Kostly</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background: #f5f7f5; color: #20352d; }
-        .active-link { background: #eaf3e9; color: #173f35 !important; font-weight: 600; }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/neobrutalism.css}">
 </head>
 <body>
 <div th:replace="~{fragments/layout :: navbar}"></div>
@@ -18,10 +15,10 @@
         <div th:replace="~{fragments/layout :: sidebar('invoices')}"></div>
 
         <main class="col-md-10 p-4 p-lg-5">
-            <a th:href="@{/invoices}" class="text-secondary text-decoration-none">← Kembali ke tagihan</a>
+            <a th:href="@{/invoices}" class="text-dark fw-bold text-decoration-none">← Kembali ke tagihan</a>
             <h1 class="h3 fw-bold mt-3 mb-4">Buat Tagihan Baru</h1>
 
-            <div class="card border-0 shadow-sm rounded-4 p-4" style="max-width:760px">
+            <div class="card p-4" style="max-width:760px">
                 <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
                 <div th:if="${#lists.isEmpty(contracts)}" class="alert alert-warning">
@@ -40,37 +37,39 @@
                                     th:text="${c.tenant.fullName + ' - Kamar ' + c.room.roomNumber + ' (Rp ' + #numbers.formatDecimal(c.monthlyPrice, 0, 'POINT', 0, 'COMMA') + ')'}">
                             </option>
                         </select>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('contractId')}" th:errors="*{contractId}"></div>
+                        <div class="text-danger small fw-semibold" th:if="${#fields.hasErrors('contractId')}" th:errors="*{contractId}"></div>
                     </div>
 
                     <div class="mb-3">
                         <label for="description" class="form-label">Keterangan Tagihan</label>
                         <input type="text" id="description" class="form-control" th:field="*{description}"
                                placeholder="Contoh: Sewa Kamar 101 - November 2026" required>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                        <div class="text-danger small fw-semibold" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                     </div>
 
                     <div class="mb-3">
                         <label for="amount" class="form-label">Jumlah Tagihan (Rp)</label>
                         <input type="number" step="1000" min="0" id="amount" class="form-control" th:field="*{amount}" required>
-                        <div class="text-danger small" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
+                        <div class="text-danger small fw-semibold" th:if="${#fields.hasErrors('amount')}" th:errors="*{amount}"></div>
                     </div>
 
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label for="issueDate" class="form-label">Tanggal Tagihan</label>
                             <input type="date" id="issueDate" class="form-control" th:field="*{issueDate}" required>
-                            <div class="text-danger small" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}"></div>
+                            <div class="text-danger small fw-semibold" th:if="${#fields.hasErrors('issueDate')}" th:errors="*{issueDate}"></div>
                         </div>
                         <div class="col-md-6">
                             <label for="dueDate" class="form-label">Jatuh Tempo</label>
                             <input type="date" id="dueDate" class="form-control" th:field="*{dueDate}" required>
-                            <div class="text-danger small" th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}"></div>
+                            <div class="text-danger small fw-semibold" th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}"></div>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn text-white" style="background:#173f35">Simpan Tagihan</button>
-                    <a th:href="@{/invoices}" class="btn btn-light">Batal</a>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Simpan Tagihan</button>
+                        <a th:href="@{/invoices}" class="btn btn-light">Batal</a>
+                    </div>
                 </form>
 
                 <script>
