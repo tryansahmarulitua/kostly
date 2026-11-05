@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kuitansi Pembayaran - Kostly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f5f7f5; color: #20352d; }
+        .active-link { background: #eaf3e9; color: #173f35 !important; font-weight: 600; }
+        .receipt-card {
+            background: #fff;
+            border-radius: 16px;
+            max-width: 680px;
+            margin: auto;
+        }
+        @media print {
+            body { background: #fff; }
+            .no-print { display: none !important; }
+            .receipt-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="no-print" th:replace="~{fragments/layout :: navbar}"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="no-print" th:replace="~{fragments/layout :: sidebar('invoices')}"></div>
+
+        <main class="col-md-10 p-4 p-lg-5">
+            <div class="no-print d-flex justify-content-between align-items-center mb-4" style="max-width:680px; margin:auto;">
+                <a th:href="@{/invoices}" class="text-secondary text-decoration-none">← Kembali ke tagihan</a>
+                <button onclick="window.print()" class="btn btn-outline-dark btn-sm">🖨 Cetak Kuitansi</button>
+            </div>
+
+            <div class="receipt-card shadow-sm p-4 p-md-5">
+                <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+                    <div>
+                        <h2 class="h4 fw-bold text-success" style="color:#173f35 !important">Kostly.</h2>
+                        <div class="small text-secondary">Sistem Manajemen Kost</div>
+                    </div>
+                    <div class="text-end">
+                        <span th:if="${invoice.status.name() == 'PAID'}" class="badge text-bg-success fs-6 mb-1">LUNAS</span>
+                        <span th:if="${invoice.status.name() == 'UNPAID'}" class="badge text-bg-warning fs-6 mb-1">BELUM LUNAS</span>
+                        <div class="small text-secondary" th:text="${invoice.invoiceNumber}"></div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="small text-secondary">Diterima dari:</div>
+                        <div class="fw-bold fs-6" th:text="${invoice.contract.tenant.fullName}"></div>
+                        <div class="small text-secondary" th:text="${'NIK: ' + invoice.contract.tenant.nik}"></div>
+                        <div class="small text-secondary" th:text="${'No. HP: ' + invoice.contract.tenant.phone}"></div>
+                    </div>
+                    <div class="col-6 text-end">
+                        <div class="small text-secondary">Kamar:</div>
+                        <div class="fw-bold fs-6" th:text="${'Kamar ' + invoice.contract.room.roomNumber}"></div>
+                        <div class="small text-secondary" th:text="${invoice.contract.room.type}"></div>
+                        <div class="small text-secondary" th:if="${invoice.payment != null}"
+                             th:text="${'Tgl Bayar: ' + #temporals.format(invoice.payment.paymentDate, 'dd-MM-yyyy')}"></div>
+                    </div>
+                </div>
+
+                <table class="table table-bordered mb-4">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Deskripsi</th>
+                        <th class="text-end" style="width: 180px;">Jumlah</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <div class="fw-semibold" th:text="${invoice.description}"></div>
+                            <div class="small text-secondary"
+                                 th:text="${'Periode Kontrak: ' + #temporals.format(invoice.contract.startDate, 'dd-MM-yyyy') + ' s/d ' + #temporals.format(invoice.contract.endDate, 'dd-MM-yyyy')}">
+                            </div>
+                        </td>
+                        <td class="text-end fw-bold align-middle"
+                            th:text="${'Rp ' + #numbers.formatDecimal(invoice.amount, 0, 'POINT', 0, 'COMMA')}">
+                        </td>
+                    </tr>
+                    <tr class="table-light fw-bold">
+                        <td>TOTAL DIBAYAR</td>
+                        <td class="text-end text-success fs-6"
+                            th:text="${'Rp ' + #numbers.formatDecimal(invoice.amount, 0, 'POINT', 0, 'COMMA')}">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="p-3 bg-light rounded-3 mb-4" th:if="${invoice.payment != null}">
+                    <div class="row small">
+                        <div class="col-md-6 mb-2 mb-md-0">
+                            <span class="text-secondary">Metode Pembayaran: </span>
+                            <span class="fw-semibold" th:text="${invoice.payment.paymentMethod}"></span>
+                        </div>
+                        <div class="col-md-6 text-md-end" th:if="${invoice.payment.notes != null and !invoice.payment.notes.empty}">
+                            <span class="text-secondary">Catatan: </span>
+                            <span class="fw-semibold" th:text="${invoice.payment.notes}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center text-secondary small pt-3 border-top">
+                    Terima kasih atas pembayaran Anda. Dokumen ini adalah bukti transaksi yang sah.
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

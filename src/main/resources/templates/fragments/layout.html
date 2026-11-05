@@ -41,9 +41,11 @@
         Keuangan
     </div>
 
-    <span class="nav-link text-secondary px-3">
+    <a class="nav-link rounded px-3 py-2 mb-1"
+       th:classappend="${active == 'invoices'} ? ' active-link' : ''"
+       th:href="@{/invoices}">
         💳 &nbsp; Tagihan & Pembayaran
-    </span>
+    </a>
 
     <span class="nav-link text-secondary px-3">
         ◷ &nbsp; Laporan
