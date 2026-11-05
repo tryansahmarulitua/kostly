@@ -31,11 +31,11 @@
                 <form method="get" th:action="@{/reports}" class="row g-3 align-items-end">
                     <div class="col-md-4">
                         <label class="form-label small fw-semibold">Dari Tanggal</label>
-                        <input type="date" name="startDate" class="form-control" th:value="${startDate}" required>
+                        <input type="date" name="startDate" class="form-control" th:value="${startDate}">
                     </div>
                     <div class="col-md-4">
                         <label class="form-label small fw-semibold">Sampai Tanggal</label>
-                        <input type="date" name="endDate" class="form-control" th:value="${endDate}" required>
+                        <input type="date" name="endDate" class="form-control" th:value="${endDate}">
                     </div>
                     <div class="col-md-4 d-flex gap-2">
                         <button type="submit" class="btn btn-primary w-100">Filter</button>
@@ -49,9 +49,20 @@
                 <h4 class="fw-bold mb-1">Kostly - Laporan Penerimaan Sewa</h4>
                 <div class="text-secondary small fw-semibold">
                     Periode:
-                    <span th:text="${#temporals.format(startDate, 'dd-MM-yyyy')}"></span>
-                    s/d
-                    <span th:text="${#temporals.format(endDate, 'dd-MM-yyyy')}"></span>
+                    <th:block th:if="${startDate != null and endDate != null}">
+                        <span th:text="${#temporals.format(startDate, 'dd-MM-yyyy')}"></span>
+                        s/d
+                        <span th:text="${#temporals.format(endDate, 'dd-MM-yyyy')}"></span>
+                    </th:block>
+                    <th:block th:if="${startDate != null and endDate == null}">
+                        Mulai <span th:text="${#temporals.format(startDate, 'dd-MM-yyyy')}"></span>
+                    </th:block>
+                    <th:block th:if="${startDate == null and endDate != null}">
+                        Sampai <span th:text="${#temporals.format(endDate, 'dd-MM-yyyy')}"></span>
+                    </th:block>
+                    <th:block th:if="${startDate == null and endDate == null}">
+                        Semua Periode
+                    </th:block>
                 </div>
                 <hr class="border-2 border-dark">
             </div>
@@ -62,7 +73,7 @@
                     <div class="card stat p-3">
                         <div class="stat-label">Total Penerimaan</div>
                         <div class="stat-num text-success" th:text="${'Rp ' + #numbers.formatDecimal(totalRevenue, 0, 'POINT', 0, 'COMMA')}">Rp 0</div>
-                        <div class="small text-secondary">Periode terpilih</div>
+                        <div class="small text-secondary" th:text="${startDate != null or endDate != null ? 'Periode terpilih' : 'Semua transaksi'}">Semua transaksi</div>
                     </div>
                 </div>
                 <div class="col-sm-4">
@@ -107,8 +118,9 @@
                             <td class="fw-bold text-end" th:text="${'Rp ' + #numbers.formatDecimal(p.amount, 0, 'POINT', 0, 'COMMA')}"></td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(payments)}">
-                            <td colspan="7" class="text-center text-secondary py-5">
-                                Belum ada transaksi pembayaran pada rentang tanggal ini.
+                            <td colspan="7" class="text-center text-secondary py-5"
+                                th:text="${startDate != null or endDate != null ? 'Belum ada transaksi pembayaran pada rentang tanggal ini.' : 'Belum ada transaksi pembayaran.'}">
+                                Belum ada transaksi pembayaran.
                             </td>
                         </tr>
                         </tbody>

@@ -61,4 +61,24 @@ class ReportControllerTest {
         assertEquals(2, model.getAttribute("paymentCount"));
         assertEquals(3L, model.getAttribute("unpaidCount"));
     }
+
+    @Test
+    void testFinancialReportWithoutDateFilterReturnsAllPayments() {
+        Payment payment = new Payment();
+        payment.setAmount(BigDecimal.valueOf(2000000));
+        payment.setPaymentDate(LocalDate.of(2026, 10, 29));
+
+        when(paymentRepository.findAllByOrderByPaymentDateDesc()).thenReturn(List.of(payment));
+        when(invoiceRepository.countByStatus(InvoiceStatus.UNPAID)).thenReturn(1L);
+
+        Model model = new ExtendedModelMap();
+        String view = reportController.index(null, null, model);
+
+        assertEquals("reports/index", view);
+        assertEquals(null, model.getAttribute("startDate"));
+        assertEquals(null, model.getAttribute("endDate"));
+        assertEquals(BigDecimal.valueOf(2000000), model.getAttribute("totalRevenue"));
+        assertEquals(1, model.getAttribute("paymentCount"));
+        assertEquals(1L, model.getAttribute("unpaidCount"));
+    }
 }

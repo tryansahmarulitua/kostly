@@ -9,5 +9,8 @@ import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByInvoiceId(Long invoiceId);
+    List<Payment> findAllByOrderByPaymentDateDesc();
     List<Payment> findByPaymentDateBetweenOrderByPaymentDateDesc(LocalDate startDate, LocalDate endDate);
+    List<Payment> findByPaymentDateGreaterThanEqualOrderByPaymentDateDesc(LocalDate startDate);
+    List<Payment> findByPaymentDateLessThanEqualOrderByPaymentDateDesc(LocalDate endDate);
 }

@@ -6,6 +6,7 @@ import com.kostly.repository.InvoiceRepository;
 import com.kostly.repository.PaymentRepository;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,22 +29,33 @@ public class ReportController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public String index(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             Model model) {
 
         // ponytail: multi-currency and tax breakdown skipped, add when accounting module requested
-        LocalDate start = (startDate != null) ? startDate : LocalDate.now().withDayOfMonth(1);
-        LocalDate end = (endDate != null) ? endDate : LocalDate.now();
+        LocalDate start = startDate;
+        LocalDate end = endDate;
 
-        if (end.isBefore(start)) {
+        if (start != null && end != null && end.isBefore(start)) {
             LocalDate tmp = start;
             start = end;
             end = tmp;
         }
 
-        List<Payment> payments = paymentRepository.findByPaymentDateBetweenOrderByPaymentDateDesc(start, end);
+        List<Payment> payments;
+        if (start != null && end != null) {
+            payments = paymentRepository.findByPaymentDateBetweenOrderByPaymentDateDesc(start, end);
+        } else if (start != null) {
+            payments = paymentRepository.findByPaymentDateGreaterThanEqualOrderByPaymentDateDesc(start);
+        } else if (end != null) {
+            payments = paymentRepository.findByPaymentDateLessThanEqualOrderByPaymentDateDesc(end);
+        } else {
+            payments = paymentRepository.findAllByOrderByPaymentDateDesc();
+        }
+
         BigDecimal totalRevenue = payments.stream()
                 .map(Payment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
