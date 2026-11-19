@@ -6,6 +6,7 @@ com\kostly\entity\User.class
 com\kostly\dto\ContractForm.class
 com\kostly\controller\DashboardController.class
 com\kostly\config\SecurityConfig.class
+com\kostly\service\ReportService.class
 com\kostly\repository\InvoiceRepository.class
 com\kostly\repository\PaymentRepository.class
 com\kostly\KostlyApplication.class
